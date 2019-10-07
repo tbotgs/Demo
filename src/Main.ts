@@ -29,11 +29,11 @@
 
 class Main extends egret.DisplayObjectContainer {
 
-    world: World;
+    private _world: World;
 
-    player: Player;
+    private _player: Player;
 
-    standableObejcts: StandableObject[] = [];
+    private _standableObejcts: StandableObject[] = [];
 
     public constructor() {
         super();
@@ -46,14 +46,8 @@ class Main extends egret.DisplayObjectContainer {
             // custom lifecycle plugin
 
             context.onUpdate = () => {
-                if (this.player) {
-                    if (this.standableObejcts) {
-                        this.standableObejcts.forEach((obj) => {
-                            if (!obj.hitTestPoint(this.player.x, this.player.y + this.player.height)) {
-                                this.player.applyGravity();
-                            }
-                        });
-                    }
+                if (this._player) {
+                    this._player.applyGravity();
                 }
             }
 
@@ -102,7 +96,7 @@ class Main extends egret.DisplayObjectContainer {
      * Create a game scene
      */
     private createGameScene() {
-        this.world = new World();
+        this._world = new World();
 
         let stageW = this.stage.stageWidth;
         let stageH = this.stage.stageHeight;
@@ -111,18 +105,18 @@ class Main extends egret.DisplayObjectContainer {
         background.graphics.beginFill(0x000000, 1);
         background.graphics.drawRect(0, 0, stageW, stageH);
         background.graphics.endFill();
-        this.world.addBackground(background);
+        this._world.addBackground(background);
 
-        this.player = new Player(100, 200);
+        this._player = new Player(100, 200);
 
         let standableObejct = new StandableObject(0, 250, stageW, 30);
 
-        this.standableObejcts.push(standableObejct);
+        this._standableObejcts.push(standableObejct);
 
-        this.world.addGameObject(standableObejct);
+        this._world.addGameObject(standableObejct);
 
-        this.world.addGameObject(this.player);
+        this._world.addGameObject(this._player);
 
-        this.addChild(this.world.container);
+        this.addChild(this._world.Container);
     }
 }

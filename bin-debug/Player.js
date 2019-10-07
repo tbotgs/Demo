@@ -34,17 +34,18 @@ var Player = (function (_super) {
         this.stage.addEventListener(egret.TouchEvent.TOUCH_TAP, this.jumpHandler, this);
     };
     Player.prototype.moveHandler = function (event) {
-        if (event.touchDown && this._onGround) {
-            if (event.stageX < this.x) {
-                this.move(-this._movementSpeed, 0);
-            }
-            else if (event.stageX > this.x) {
-                this.move(this._movementSpeed, 0);
-            }
-        }
+        // if (event.touchDown && this._onGround) {
+        //     if (event.stageX < this.x) {
+        //         this.move(-this._movementSpeed, 0);
+        //     }
+        //     else if (event.stageX > this.x) {
+        //         this.move(this._movementSpeed, 0);
+        //     }
+        // }
     };
     Player.prototype.jumpHandler = function (event) {
         if (!event.touchDown && this.y - this._jumpForce > this.height) {
+            this.ObjectsBelow.RemoveAll();
             this.jump(this._jumpForce, 1000);
         }
     };
@@ -64,14 +65,22 @@ var Player = (function (_super) {
         }
     };
     Player.prototype.applyGravity = function () {
-        if (this.y < this.world.Height - this.world.Height - this._gravity) {
-            this.y += this._gravity;
-        }
-        else {
-            this._onGround = true;
-            this._isJumping = false;
-            if (this.y + this.height > this.world.Height - this._gravity) {
-                this.y = this.world.Height - this.height;
+        var _this = this;
+        if (!this._isJumping) {
+            if (this.ObjectsBelow.Count != 0) {
+                this._onGround = true;
+                this._isJumping = false;
+                this.y = this.ObjectsBelow.Values()[0].y - this.height;
+            }
+            else {
+                this.y += this._gravity;
+                this._onGround = false;
+                this._isJumping = false;
+                this.World.GameObjects.Values().forEach(function (go) {
+                    if (go != _this && _this.hitTestPoint(go.x, go.y, true)) {
+                        _this.ObjectsBelow.Add(go.hashCode.toString(), go);
+                    }
+                });
             }
         }
     };

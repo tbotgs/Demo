@@ -11,11 +11,23 @@ r.prototype = e.prototype, t.prototype = new r();
 var GameObject = (function (_super) {
     __extends(GameObject, _super);
     function GameObject() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this._objectsBelow = new utils.Dictionary();
+        return _this;
     }
+    Object.defineProperty(GameObject.prototype, "ObjectsBelow", {
+        get: function () {
+            return this._objectsBelow;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(GameObject.prototype, "World", {
+        get: function () {
+            return this._world;
+        },
         set: function (world) {
-            this.world = world;
+            this._world = world;
         },
         enumerable: true,
         configurable: true

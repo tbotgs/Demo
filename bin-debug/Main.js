@@ -75,7 +75,7 @@ var Main = (function (_super) {
     __extends(Main, _super);
     function Main() {
         var _this = _super.call(this) || this;
-        _this.standableObejcts = [];
+        _this._standableObejcts = [];
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
         return _this;
     }
@@ -84,14 +84,8 @@ var Main = (function (_super) {
         egret.lifecycle.addLifecycleListener(function (context) {
             // custom lifecycle plugin
             context.onUpdate = function () {
-                if (_this.player) {
-                    if (_this.standableObejcts) {
-                        _this.standableObejcts.forEach(function (obj) {
-                            if (!obj.hitTestPoint(_this.player.x, _this.player.y + _this.player.height)) {
-                                _this.player.applyGravity();
-                            }
-                        });
-                    }
+                if (_this._player) {
+                    _this._player.applyGravity();
                 }
             };
         });
@@ -157,20 +151,20 @@ var Main = (function (_super) {
      * Create a game scene
      */
     Main.prototype.createGameScene = function () {
-        this.world = new World();
+        this._world = new World();
         var stageW = this.stage.stageWidth;
         var stageH = this.stage.stageHeight;
         var background = new egret.Shape();
         background.graphics.beginFill(0x000000, 1);
         background.graphics.drawRect(0, 0, stageW, stageH);
         background.graphics.endFill();
-        this.world.addBackground(background);
-        this.player = new Player(100, 200);
+        this._world.addBackground(background);
+        this._player = new Player(100, 200);
         var standableObejct = new StandableObject(0, 250, stageW, 30);
-        this.standableObejcts.push(standableObejct);
-        this.world.addGameObject(standableObejct);
-        this.world.addGameObject(this.player);
-        this.addChild(this.world.container);
+        this._standableObejcts.push(standableObejct);
+        this._world.addGameObject(standableObejct);
+        this._world.addGameObject(this._player);
+        this.addChild(this._world.Container);
     };
     return Main;
 }(egret.DisplayObjectContainer));

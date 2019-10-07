@@ -1,11 +1,11 @@
 class Player extends GameObject {
 
-    _gravity: number = 9.8;
-    _jumpForce: number = 100;
-    _movementSpeed: number = 10;
+    private _gravity: number = 9.8;
+    private _jumpForce: number = 100;
+    private _movementSpeed: number = 10;
 
-    _onGround: boolean = false;
-    _isJumping: boolean = false;
+    private _onGround: boolean = false;
+    private _isJumping: boolean = false;
 
     public constructor(x?: number, y?: number) {
         super();
@@ -28,18 +28,19 @@ class Player extends GameObject {
     }
 
     private moveHandler(event: egret.TouchEvent) {
-        if (event.touchDown && this._onGround) {
-            if (event.stageX < this.x) {
-                this.move(-this._movementSpeed, 0);
-            }
-            else if (event.stageX > this.x) {
-                this.move(this._movementSpeed, 0);
-            }
-        }
+        // if (event.touchDown && this._onGround) {
+        //     if (event.stageX < this.x) {
+        //         this.move(-this._movementSpeed, 0);
+        //     }
+        //     else if (event.stageX > this.x) {
+        //         this.move(this._movementSpeed, 0);
+        //     }
+        // }
     }
 
     private jumpHandler(event: egret.TouchEvent) {
         if (!event.touchDown && this.y - this._jumpForce > this.height) {
+            this.ObjectsBelow.RemoveAll();
             this.jump(this._jumpForce, 1000);
         }
     }
@@ -62,14 +63,22 @@ class Player extends GameObject {
     }
 
     public applyGravity() {
-        if (this.y < this.world.Height - this.world.Height - this._gravity) {
-            this.y += this._gravity;
-        }
-        else {
-            this._onGround = true;
-            this._isJumping = false;
-            if (this.y + this.height > this.world.Height - this._gravity) {
-                this.y = this.world.Height - this.height;
+        if (!this._isJumping) {
+            if (this.ObjectsBelow.Count != 0) {
+                this._onGround = true;
+                this._isJumping = false;
+                this.y = (<GameObject>this.ObjectsBelow.Values()[0]).y - this.height;
+            }
+            else {
+                this.y += this._gravity;
+                this._onGround = false;
+                this._isJumping = false;
+
+                this.World.GameObjects.Values().forEach((go) => {
+                    if (go != this && this.hitTestPoint(go.x, go.y, true)) {
+                        this.ObjectsBelow.Add(go.hashCode.toString(), go);
+                    }
+                });
             }
         }
     }

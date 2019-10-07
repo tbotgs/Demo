@@ -18,4 +18,5 @@ class StandableObject extends GameObject {
 
         this.addChild(sprite);
     }
+
 }
